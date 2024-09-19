@@ -1,0 +1,72 @@
+.wrapper {
+    font-family: "Roboto", sans-serif;
+    height: 100vh;
+    width: 100% !important;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: aquamarine;
+    // background-image: url(../../../public/img/bg-login-img.jpg) !important;
+    background-size: auto;
+
+    position: relative;
+    .logo-body{
+        display: block;
+        justify-content: center;
+        text-align: center;
+        align-items: center;
+    }
+    .title-login{
+        height: 30px;
+    }
+    .form-login-header {
+        display: grid;
+        justify-content: center;
+        align-items: center;
+
+        .form-login-body {
+            margin: 5px 0;
+
+
+
+
+            .form-input {
+                width: 250px;
+                height: 25px;
+            }
+        }
+    }
+
+    .form-login {
+        height: 400px;
+        background-color: aliceblue;
+    }
+
+    h3 {
+        color: #000 !important;
+    }
+
+    .text-center {
+        display: flex;
+        justify-content: center;
+    }
+
+    p {
+        display: flex;
+        justify-content: center;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .card {
+        width: 500px;
+        height: 400px;
+    }
+    .btn-primary{
+        margin: 0 auto;
+    }
+}

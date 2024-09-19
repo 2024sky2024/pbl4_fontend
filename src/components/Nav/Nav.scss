@@ -1,0 +1,50 @@
+.navbar {
+    background-color: rgb(134, 109, 82);
+    height: 70px;
+
+    .nav-header {
+        .bg-body-tertiary {
+            display: flex;
+
+            .brand {
+                margin-left: 20px;
+                margin-top: 9px;
+            }
+
+            .navbar-brand {
+                margin-right: 100px;
+            }
+
+            .container {
+            
+                
+                .navbar-collapse {
+                    display: flex;
+                    
+                     justify-content: space-between;
+                     width: 850px;
+
+                    .me-auto {
+                        display: flex;
+                        margin-top: 20px;
+
+                        .nav-link {
+                            margin: 0 10px;
+                            text-decoration: none;
+                        }
+                    }
+
+                    .login-User {
+                        display: flex;
+                        margin-top: 20px;
+                        .welcome{
+                            margin-right: 10px;
+                          
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}
