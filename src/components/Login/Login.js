@@ -3,9 +3,11 @@ import "./Login.scss";
 import { useHistory, Link } from "react-router-dom";
 import React from 'react';
 
-
 const Login = () => {
-
+    let history = useHistory();
+    const handleLogin = async() =>{
+        history.push("/");
+    }
     return (
         <>
             <div className="wrapper">
@@ -73,7 +75,10 @@ const Login = () => {
                                                         <div className="d-grid">
                                                             <button
                                                                 className="btn btn-primary"
-
+                                                                onClick={(e) => {
+                                                                    e.preventDefault(); // Ngăn chặn hành vi mặc định của sự kiện
+                                                                    handleLogin();
+                                                                }}
                                                             >
                                                                 Login
                                                             </button>
