@@ -4,12 +4,14 @@ import "./Users.scss";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import ModalUser from "./ModalUser";
+import { deleteUser, fetchAllUsers, getUsers } from "../../services/userServices";
+import ModalDelete from "./ModalDelete";
 const Users = (props) => {
   const [listUsers, setListUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentLimit, setCurrentLimit] = useState(4);
   const [totalPages, setTotalPages] = useState(0);
-  
+
   // Modal states
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [dataModal, setDataModal] = useState({});
@@ -19,25 +21,19 @@ const Users = (props) => {
 
   useEffect(() => {
     fetchUsers();
+
+
   }, [currentPage]);
 
-  // Temporary user data
-  const temporaryUsers = [
-    { id: 1, email: "user1@example.com", username: "user1", Group: { name: "Admin" } },
-    { id: 2, email: "user2@example.com", username: "user2", Group: { name: "User" } },
-    { id: 3, email: "user3@example.com", username: "user3", Group: { name: "User" } },
-    { id: 4, email: "user4@example.com", username: "user4", Group: { name: "Admin" } },
-    { id: 5, email: "user5@example.com", username: "user5", Group: { name: "User" } },
-    { id: 6, email: "user6@example.com", username: "user6", Group: { name: "Admin" } },
-  ];
 
   const fetchUsers = async () => {
+    let response = await fetchAllUsers(currentPage, currentLimit);
     // Simulating an API call with temporary data
-    const startIndex = (currentPage - 1) * currentLimit;
-    const endIndex = startIndex + currentLimit;
-    const usersToDisplay = temporaryUsers.slice(startIndex, endIndex);
-    setListUsers(usersToDisplay);
-    setTotalPages(Math.ceil(temporaryUsers.length / currentLimit));
+    if (response && response.data.EC == 0) {
+
+      setTotalPages(response.data.DT.totalPages);
+      setListUsers(response.data.DT.users);
+    }
   };
 
   const handlePageClick = async (event) => {
@@ -49,16 +45,22 @@ const Users = (props) => {
     setIsShowModalDelete(true);
   };
 
+
   const handleClose = () => {
     setIsShowModalDelete(false);
     setDataModal({});
   };
-
   const confirmDeleteUser = async () => {
-    // Here you can add logic to delete the user from the temporary data
-    toast.success("User deleted successfully!");
-    fetchUsers();
-    setIsShowModalDelete(false);
+    let response = await deleteUser(dataModal.id);
+    console.log(">>Check response dataModal: ", response.data[1]);
+    if (response && response.data[1] == 'deleted') {
+      toast.success(response.data.EM);
+      await fetchUsers();
+      setIsShowModalDelete(false);
+         console.log(">>Check response dataModal  ====: ");
+    } else {
+      toast.error(response.data.EM);
+    }
   };
 
   const onHideModalUser = async () => {
@@ -114,12 +116,14 @@ const Users = (props) => {
                         <td>{item.id}</td>
                         <td>{item.email}</td>
                         <td>{item.username}</td>
-                        <td>{item.Group ? item.Group.name : ""}</td>
+
                         <td>
                           <span title="Edit" className="edit" onClick={() => handleEditUser(item)}>
                             <i className="fa fa-pencil"></i>
                           </span>
-                          <span title="Delete" className="delete" onClick={() => handleDeleteUser(item)}>
+                          <span title="Delete"
+                            className="delete"
+                            onClick={() => handleDeleteUser(item)}>
                             <i className="fa fa-trash"></i>
                           </span>
                         </td>
@@ -160,6 +164,13 @@ const Users = (props) => {
           )}
         </div>
       </div>
+
+      <ModalDelete
+        show={isShowModalDelete}
+        handleClose={handleClose}
+        confirmDeleteUser={confirmDeleteUser}
+        dataModal={dataModal}
+      />
 
       {/* Add modal components here for delete and user creation/editing */}
       <ModalUser

@@ -1,34 +1,30 @@
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { useState, useEffect } from "react";
-// import {
-//   fetchGroup,
-//   createNewUser,
-//   updateCurrentUser,
-// } from "../../../servises/userService";
 import { toast } from "react-toastify";
 import _ from "lodash";
+import { createNewUser, updateCurrentUser } from "../../services/userServices";
 
 const ModalUser = (props) => {
   const { action, dataModalUser } = props;
   const defaultUserData = {
     email: "",
     phone: "",
-    username: "",
+    name: "",
     password: "",
     address: "",
     sex: "",
-    group: "",
+
   };
 
   const validInputsDefault = {
     email: true,
     phone: true,
-    username: true,
+    name: true,
     password: true,
     address: true,
     sex: true,
-    group: true,
+
   };
 
   const [userData, setUserData] = useState(defaultUserData);
@@ -36,39 +32,6 @@ const ModalUser = (props) => {
 
   const [userGroups, setUserGroups] = useState([]);
 
-  useEffect(() => {
-    getGroups();
-  }, []);
-
-  useEffect(() => {
-    if (action === "UPDATE") {
-      setUserData({
-        ...dataModalUser,
-        group: dataModalUser.Group ? dataModalUser.Group.id : "",
-      });
-    }
-  }, [dataModalUser]);
-
-  useEffect(() => {
-    if (action === "CREATE") {
-      if (userGroups && userGroups.length > 0) {
-        setUserData({ ...userData, group: userGroups[0].id });
-      }
-    }
-  }, [action]);
-
-  const getGroups = async () => {
-    // let res = await fetchGroup();
-    // if (res && res.EC === 0) {
-    //   setUserGroups(res.DT);
-    //   if (res.DT && res.DT.length > 0) {
-    //     let groups = res.DT;
-    //     setUserData({ ...userData, group: groups[0].id });
-    //   }
-    // } else {
-    //   toast.error(res.EM);
-    // }
-  };
 
   const handleOnChangeInput = (value, name) => {
     let _userData = _.cloneDeep(userData);
@@ -80,7 +43,7 @@ const ModalUser = (props) => {
     // create user
     if (action === "UPDATE") return true;
     setValidInputs(validInputsDefault);
-    let arr = ["email", "phone", "password", "group"];
+    let arr = ["email", "phone", "password"];
     let check = true;
     for (let i = 0; i < arr.length; i++) {
       if (!userData[arr[i]]) {
@@ -96,38 +59,35 @@ const ModalUser = (props) => {
 
     return check;
   };
-
   const handleConfirmUser = async () => {
-    // create user
-    // let check = checkValidateInputs();
-    // if (check === true) {
-    //   let res =
-    //     action === "CREATE"
-    //       ? await createNewUser({
-    //         ...userData,
-    //         groupId: userData["group"],
-    //       })
-    //       : await updateCurrentUser({
-    //         ...userData,
-    //         groupId: userData["group"],
-    //       });
-    //   if (res && res.EC === 0) {
-    //     props.onHide();
-    //     setUserData({
-    //       ...defaultUserData,
-    //       group: userGroups && userGroups.length > 0 ? userGroups[0].id : "",
-    //     });
-    //     toast.success("UPDATE success");
-    //   } else {
-    //     toast.error(res.EM);
-    //     let _validInputs = _.cloneDeep(validInputsDefault);
-    //     _validInputs[res.DT] = false;
-    //     setValidInputs(_validInputs);
-    //     toast.success("UPDATE unsuccess");
-    //   }
-    // }
-  };
 
+    let check = checkValidateInputs();
+    if (check === true) {
+      let res =
+        action === "CREATE"
+          ? await createNewUser({
+            ...userData
+          })
+          : await updateCurrentUser({
+            ...userData
+          });
+      console.log("check res: ", res.data[1]);
+      if (res && res.data[1] === "created") {
+        props.onHide();
+        setUserData({
+          ...defaultUserData,
+          group: userGroups && userGroups.length > 0 ? userGroups[0].id : "",
+        });
+        toast.success("UPDATE success");
+      } else {
+        toast.error("something wrong with service");
+        let _validInputs = _.cloneDeep(validInputsDefault);
+        _validInputs[res.DT] = false;
+        setValidInputs(_validInputs);
+        toast.success("UPDATE unsuccess");
+      }
+    }
+  };
   const handleCloseModalUser = () => {
     props.onHide();
     setUserData(defaultUserData);
@@ -189,9 +149,9 @@ const ModalUser = (props) => {
               <input
                 className="form-control"
                 type="text"
-                value={userData.username}
+                value={userData.name}
                 onChange={(event) =>
-                  handleOnChangeInput(event.target.value, "username")
+                  handleOnChangeInput(event.target.value, "name")
                 }
               />
             </div>
@@ -245,29 +205,7 @@ const ModalUser = (props) => {
               </select>
             </div>
 
-            <div className="col-12 col-sm-6 form-group">
-              <label>
-                Group (<span className="red">*</span>):
-              </label>
-              <select
-                className={
-                  validInputs.group ? "form-select" : "form-select is-invalid"
-                }
-                onChange={(event) =>
-                  handleOnChangeInput(event.target.value, "group")
-                }
-                value={userData.group}
-              >
-                {userGroups.length > 0 &&
-                  userGroups.map((item, index) => {
-                    return (
-                      <option key={`group-${index}`} value={item.id}>
-                        {item.name}
-                      </option>
-                    );
-                  })}
-              </select>
-            </div>
+
           </div>
         </Modal.Body>
         <Modal.Footer>
